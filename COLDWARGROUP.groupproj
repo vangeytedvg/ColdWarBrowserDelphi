@@ -1,0 +1,36 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{1AFB18CD-0EEF-4775-9F7F-DB8D621A96DF}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="SimpleFMXBrowser.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="SimpleFMXBrowser">
+        <MSBuild Projects="SimpleFMXBrowser.dproj"/>
+    </Target>
+    <Target Name="SimpleFMXBrowser:Clean">
+        <MSBuild Projects="SimpleFMXBrowser.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="SimpleFMXBrowser:Make">
+        <MSBuild Projects="SimpleFMXBrowser.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="SimpleFMXBrowser"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="SimpleFMXBrowser:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="SimpleFMXBrowser:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

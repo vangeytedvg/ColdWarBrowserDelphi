@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>2023/04/19 07:28:34.000.635,=C:\Development\Delphi\WebView4Delphi-main\WebView4Delphi-main\demos\Delphi_FMX\SimpleFMXBrowser\Unit2.pas</Transaction>
+    <Transaction>2023/04/19 08:19:27.000.097,C:\Development\Delphi\WebView4Delphi-main\WebView4Delphi-main\demos\Delphi_FMX\SimpleFMXBrowser\Unit2.fmx=C:\Development\Delphi\WebView4Delphi-main\WebView4Delphi-main\demos\Delphi_FMX\SimpleFMXBrowser\frmAddLink.fmx</Transaction>
+    <Transaction>2023/04/19 08:19:27.000.097,C:\Development\Delphi\WebView4Delphi-main\WebView4Delphi-main\demos\Delphi_FMX\SimpleFMXBrowser\Unit2.pas=C:\Development\Delphi\WebView4Delphi-main\WebView4Delphi-main\demos\Delphi_FMX\SimpleFMXBrowser\frmAddLink.pas</Transaction>
+  </Transactions>
+</BorlandProject>

@@ -1,0 +1,16 @@
+program SimpleFMXBrowser;
+
+uses
+  System.StartUpCopy,
+  FMX.Forms,
+  uMainForm in 'uMainForm.pas' {MainForm},
+  frmAddLink in 'frmAddLink.pas' {AddLinkForm};
+
+{$R *.res}
+
+begin
+  Application.Initialize;
+  AApplication.CreateForm(TMainForm, MainForm);
+  AApplication.CreateForm(TForm2, Form2);
+  plication.Run;
+end.
