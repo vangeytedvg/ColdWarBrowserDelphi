@@ -16,7 +16,7 @@ uses
 	FireDAC.DatS, FireDAC.DApt.Intf, FireDAC.DApt, Data.Bind.EngExt,
 	Fmx.Bind.DBEngExt, System.Rtti, System.Bindings.Outputs, Fmx.Bind.Editors,
 	Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client, Data.Bind.Components,
-	Data.Bind.DBScope, FMX.TabControl, FMX.DialogService;
+	Data.Bind.DBScope, FMX.TabControl, FMX.DialogService, FMX.Objects;
 
 const
 	WEBVIEW2_SHOWBROWSER = WM_APP + $101;
@@ -41,7 +41,7 @@ type
 		FDQuery1: TFDQuery;
 		Header: TToolBar;
 		HeaderLabel: TLabel;
-		Button1: TButton;
+		BtnSaveLink: TButton;
 		FDQueryInsertNewLink: TFDQuery;
 		Panel1: TPanel;
 		BrowserLay: TLayout;
@@ -49,7 +49,11 @@ type
 		BtnDeleteSelectedListItem: TButton;
 		BtnEditSelectedLink: TButton;
 		FDQueryDeleteItem: TFDQuery;
-		Button2: TButton;
+		BtnClearAddress: TButton;
+		FDQueryUpdateLink: TFDQuery;
+		BtnInfo: TButton;
+		FDQueryGetArticle: TFDQuery;
+		FDQueryGeneric: TFDQuery;
 		procedure FormCreate(Sender: TObject);
 		procedure FormResize(Sender: TObject);
 		procedure FormShow(Sender: TObject);
@@ -63,15 +67,43 @@ type
 			const AWebView: ICoreWebView2);
 		procedure ListBoxDescriptionItemClick(const Sender: TCustomListBox;
 			const Item: TListBoxItem);
-		procedure Button1Click(Sender: TObject);
+		procedure BtnSaveLinkClick(Sender: TObject);
 		procedure BtnDeleteSelectedListItemClick(Sender: TObject);
-		procedure Button2Click(Sender: TObject);
-    procedure btnEditSelectedLinkClick(Sender: TObject);
+		procedure BtnClearAddressClick(Sender: TObject);
+		procedure BtnEditSelectedLinkClick(Sender: TObject);
+		procedure BtnInfoClick(Sender: TObject);
+		procedure WVFMXBrowser1FrameNavigationStarting(Sender: TObject;
+			const AWebView: ICoreWebView2;
+			const AArgs: ICoreWebView2NavigationStartingEventArgs);
+		procedure WVFMXBrowser1FrameNavigationCompleted(Sender: TObject;
+			const AWebView: ICoreWebView2;
+			const AArgs: ICoreWebView2NavigationCompletedEventArgs);
+		procedure WVFMXBrowser1FrameDOMContentLoaded(Sender: TObject;
+			const AFrame: ICoreWebView2Frame;
+			const AArgs: ICoreWebView2DOMContentLoadedEventArgs; AFrameID: Integer);
+		procedure WVFMXBrowser1NavigationCompleted(Sender: TObject;
+			const AWebView: ICoreWebView2;
+			const AArgs: ICoreWebView2NavigationCompletedEventArgs);
+
 	private
 		FMXWindowParent: TWVFMXWindowParent;
 		FCustomWindowState: TWindowState;
 		FOldWndPrc: TFNWndProc;
 		FFormStub: Pointer;
+		///
+		/// ColdWar
+		///
+		FLinkID: Integer;
+		FListITEM: TListBoxItem;
+		FLinkCategory: string;
+		FLinkDescription: string;
+		FLinkURL: string;
+		FArticleID: Integer;
+		FArticleText: string;
+		procedure LoadArticle(ArticleId: Integer);
+		function GetArticleContent(LinkId: Integer): string;
+		///
+		///
 		procedure LoadURL;
 		procedure ResizeChild;
 		procedure CreateFMXWindowParent;
@@ -100,7 +132,7 @@ implementation
 // This demo uses a TWVFMXBrowser and a TWVFMXWindowParent. It replaces the original WndProc with a
 // custom CustomWndProc procedure to handle Windows messages.
 uses
-	FMX.Platform, FMX.Platform.Win, FrmAddLink;
+	FMX.Platform, FMX.Platform.Win, FrmAddLink, FrmDetailsEditor;
 
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
@@ -108,6 +140,11 @@ begin
 	FCustomWindowState := WindowState;
 	FDConnection1.Connected := True;
 	FDQuery1.Active := True;
+	FLinkID := 0;
+	FListITEM := nil;
+	FLinkCategory := '';
+	FLinkDescription := '';
+	FLinkURL := '';
 end;
 
 procedure TMainForm.FormResize(Sender: TObject);
@@ -194,17 +231,30 @@ begin
 		end);
 end;
 
-procedure TMainForm.btnEditSelectedLinkClick(Sender: TObject);
+procedure TMainForm.BtnEditSelectedLinkClick(Sender: TObject);
 // Edit a selected link
 var
 	S: string;
+	UpdItem: TListBoxItem;
+	IId: Integer;
 begin
 	AddLinkForm.States := 1;
+	// UpdItem := ListBoxDescription.Selected;
+	// IId := UpdItem.ImageIndex;
+	AddLinkForm.EdtDescription.Text := FListITEM.Text;
+	Iid := FListITEM.ImageIndex;
 	if AddLinkForm.ShowModal = Mrok then
 	begin
 		try
 			FDQuery1.Close;
-
+			FDQueryUpdateLink.Prepare;
+			FDQueryUpdateLink.Params.ParamByName('Adescription').AsString :=
+				AddlinkForm.EdtDescription.Text;
+			FDQueryUpdateLink.Params.ParamByName('Acategory').Asstring :=
+				AddLinkForm.ComboBox1.Selected.Text;
+			FDQueryUpdateLink.Params.ParamByName('Aid').AsInteger := IId;
+			FDQueryUpdateLink.ExecSQL;
+			FDQuery1.Open;
 		except
 			on E: Exception do
 			begin
@@ -214,7 +264,81 @@ begin
 	end;
 end;
 
-procedure TMainForm.Button1Click(Sender: TObject);
+procedure TMainForm.BtnInfoClick(Sender: TObject);
+// Edit the information about a link
+// Insert or UPDATE it.
+var
+	FoundArt: Boolean;
+	ArticleBody: string;
+	SQLstr: string;
+begin
+	// Article Selected?
+	if FLinkId = 0 then
+	begin
+		ShowMessage('Please choose an article first!');
+		Exit;
+	end;
+	FormDetailsEditor.LinkID := FLinkID;
+	FormDetailsEditor.LblArticle.Text := FLinkDescription + ' in -<[' +
+		FLinkCategory + ']>-';
+
+	if GetArticleContent(FLinkID) = 'FOUND' then
+	// UPDATE
+	begin
+		FoundArt := True;
+		FormDetailsEditor.MemoArticle.Text := FArticleText;
+		FormDetailsEditor.IsDirty := False;
+	end
+	else
+		FoundArt := False;
+	if FormDetailsEditor.ShowModal = MrOk then
+	begin
+		ArticleBody := FormDetailsEditor.MemoArticle.Text;
+		// Save or update the article
+		if FoundArt then
+		begin
+			// Update record
+			FDQuery1.Close;
+			SQLstr := 'UPDATE LinkDetails SET Article = :mArticleBody WHERE ID = :myId';
+			FDQueryGeneric.SQL.Text := SQLstr;
+			FDQueryGeneric.ParamByName('mArticleBody').AsString := ArticleBody;
+			FDQueryGeneric.ParamByName('myId').AsInteger := FArticleID;
+			FDQueryGeneric.ExecSQL;
+			ShowMessage('Record Updated');
+			FDQuery1.Open;
+		end
+		else
+		begin
+			// Insert Record
+			FDQuery1.Close;
+			SQLstr := 'INSERT INTO LinkDetails (LinkId, Article) VALUES (' +
+				IntToStr(FLinkID) + ',' + ArticleBody + ')';
+			FDQueryGeneric.SQL.Text := SQLstr;
+			FDQueryGeneric.ExecSQL;
+			ShowMessage('New Record inserted');
+			FDQuery1.Open;
+		end;
+	end;
+end;
+
+function TMainForm.GetArticleContent(LinkId: Integer): string;
+var
+	ArticleText: string;
+begin
+	FDQueryGetArticle.ParamByName('myLinkID').AsInteger := LinkId;
+	FDQueryGetArticle.Close;
+	FDQueryGetArticle.Open;
+	if FDQueryGetArticle.RecordCount > 0 then
+	begin
+		FArticleID := FDQueryGetArticle.FieldByName('ID').Value;
+		FArticleText := FDQueryGetArticle.FieldByName('Article').Value;
+		Result := 'FOUND';
+	end
+	else
+		Result := 'NONE';
+end;
+
+procedure TMainForm.BtnSaveLinkClick(Sender: TObject);
 // Add a new link to the database
 var
 	S: string;
@@ -245,7 +369,7 @@ begin
 	end;
 end;
 
-procedure TMainForm.Button2Click(Sender: TObject);
+procedure TMainForm.BtnClearAddressClick(Sender: TObject);
 begin
 	AddressEdt.Text := '';
 end;
@@ -305,18 +429,28 @@ begin
 	BtnDeleteSelectedListItem.Enabled := True;
 	BtnEditSelectedLink.Enabled := True;
 	Id := Item.ImageIndex;
-	LinkUrl := string.Empty;
+	// Global
+	FLinkID := Id;
+	FListITEM := Item;
+	LoadArticle(Id);
+	AddressEdt.Text := FLinkURL;
+	// LoadURL;
+end;
+
+procedure TMainForm.LoadArticle(ArticleId: Integer);
+// Get the current article details and set variables
+begin
 	try
 		// Assign the current id to the select query
-		FDQueryGetLink.ParamByName('id').AsInteger := Id;
+		FDQueryGetLink.ParamByName('id').AsInteger := ArticleId;
 		FDQueryGetLink.Command.CommandKind := SkSelect;
 		FDQueryGetLink.Close;
 		FDQueryGetLink.Open;
 		if FDQueryGetLink.RecordCount > 0 then
 		begin
-			ResultUrl := FDQueryGetLink.FieldByName('link').Value;
-			AddressEdt.Text := ResultUrl;
-			LoadURL;
+			FLinkURL := FDQueryGetLink.FieldByName('link').Value;
+			FLinkDescription := FDQueryGetLink.FieldByName('description').Value;
+			FLinkCategory := FDQueryGetLink.FieldByName('category').Value;
 		end;
 	except
 		on E: Exception do
@@ -404,6 +538,35 @@ begin
 	AddressLay.Enabled := True;
 end;
 
+procedure TMainForm.WVFMXBrowser1FrameDOMContentLoaded(Sender: TObject;
+const AFrame: ICoreWebView2Frame;
+const AArgs: ICoreWebView2DOMContentLoadedEventArgs; AFrameID: Integer);
+var
+	S: PWideChar;
+begin
+	AFrame.Get_name(S);
+
+end;
+
+procedure TMainForm.WVFMXBrowser1FrameNavigationCompleted(Sender: TObject;
+const AWebView: ICoreWebView2;
+const AArgs: ICoreWebView2NavigationCompletedEventArgs);
+var
+	S: PWideChar;
+begin
+
+end;
+
+procedure TMainForm.WVFMXBrowser1FrameNavigationStarting(Sender: TObject;
+const AWebView: ICoreWebView2;
+const AArgs: ICoreWebView2NavigationStartingEventArgs);
+var
+	S: PWideChar;
+begin
+	AArgs.Get_uri(S);
+	AddressEdt.Text := S;
+end;
+
 procedure TMainForm.WVFMXBrowser1GotFocus(Sender: TObject);
 begin
 	// We use a hidden button to fix the focus issues when the browser has the real focus.
@@ -414,6 +577,18 @@ procedure TMainForm.WVFMXBrowser1InitializationError(Sender: TObject;
 AErrorCode: HRESULT; const AErrorMessage: Wvstring);
 begin
 	Showmessage(AErrorMessage);
+end;
+
+procedure TMainForm.WVFMXBrowser1NavigationCompleted(Sender: TObject;
+const AWebView: ICoreWebView2;
+const AArgs: ICoreWebView2NavigationCompletedEventArgs);
+// NOTE: HAD THIS CHANGE THIS TO KEEP TRACK OF THE URL IF THE USER
+// CLICKS ON A LINK AND THE PAGE CHANGES
+var
+	S: Pwidechar;
+begin
+	AWebView.Get_Source(S);
+	AddressEdt.TExt := S;
 end;
 
 procedure TMainForm.WVFMXBrowser1StatusBarTextChanged(Sender: TObject;

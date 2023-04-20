@@ -3,7 +3,7 @@ object AddLinkForm: TAddLinkForm
   Top = 0
   BorderIcons = []
   BorderStyle = Single
-  Caption = 'Add new Link'
+  Caption = 'Link Editor'
   ClientHeight = 207
   ClientWidth = 530
   Position = OwnerFormCenter
@@ -12,7 +12,7 @@ object AddLinkForm: TAddLinkForm
   FormFactor.Width = 320
   FormFactor.Height = 480
   FormFactor.Devices = [Desktop]
-  OnCreate = FormCreate
+  OnShow = FormShow
   DesignerMasterStyle = 0
   object ComboBox1: TComboBox
     Position.X = 112.000000000000000000
@@ -2998,8 +2998,8 @@ object AddLinkForm: TAddLinkForm
           6D44656661756C74080454657874060454657874165465787453657474696E67
           732E466F6E74436F6C6F720709784646453045304530000000}
       end>
-    Left = 112
-    Top = 157
+    Left = 32
+    Top = 125
   end
   object lblDescription: TLabel
     Position.X = 112.000000000000000000

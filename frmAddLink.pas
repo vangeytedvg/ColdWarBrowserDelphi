@@ -29,8 +29,8 @@ type
     btnOk: TButton;
 		Button2: TButton;
     Image1: TImage;
-		procedure FormCreate(Sender: TObject);
     procedure btnOkClick(Sender: TObject);
+    procedure FormShow(Sender: TObject);
 	private
 		{ Private declarations }
 		FState: Integer;
@@ -55,8 +55,7 @@ begin
   end;
 end;
 
-procedure TAddLinkForm.FormCreate(Sender: TObject);
-// Check what the state of the form is
+procedure TAddLinkForm.FormShow(Sender: TObject);
 begin
 	if States = NEWSTATE then
 		LblState.Text := 'Create New Link'

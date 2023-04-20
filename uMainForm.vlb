@@ -21,7 +21,7 @@ Coordinates=124,327,99,33
 Coordinates=35,327,73,33
 
 [BindSourceDB1]
-Coordinates=240,0,92,141
+Coordinates=270,70,92,141
 
 [StyleBook1]
 Coordinates=451,78,70,33
@@ -54,9 +54,6 @@ Coordinates=451,298,68,33
 [FDQueryInsertNewLink]
 Coordinates=428,1,128,51
 
-[Button1]
-Coordinates=20,231,53,51
-
 [Panel1]
 Coordinates=451,353,47,33
 
@@ -68,4 +65,19 @@ Coordinates=590,150,143,51
 
 [FocusWorkaroundBtn]
 Coordinates=614,1,122,51
+
+[btnSaveLink]
+Coordinates=20,231,75,51
+
+[FDQueryDeleteItem]
+Coordinates=592,78,109,51
+
+[btnClearAddress]
+Coordinates=391,1,97,51
+
+[btnEditSelectedLink]
+Coordinates=158,1,113,51
+
+[FDQueryUpdateLink]
+Coordinates=614,227,113,51
 
