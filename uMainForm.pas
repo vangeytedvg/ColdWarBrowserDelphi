@@ -324,7 +324,7 @@ begin
 	FormDetailsEditor.LinkID := FLinkID;
 	FormDetailsEditor.LblArticle.Text := FLinkDescription + ' in -<[' +
 		FLinkCategory + ']>-';
-
+  FormDetailsEditor.MemoArticle.ClearContent;
 	if GetArticleContent(FLinkID) = 'FOUND' then
 	// UPDATE
 	begin
@@ -332,8 +332,12 @@ begin
 		FormDetailsEditor.MemoArticle.Text := FArticleText;
 		FormDetailsEditor.IsDirty := False;
 	end
-	else
+	else if GetArticleContent(FLinkID) = 'NONE' then
+  begin
 		FoundArt := False;
+		FormDetailsEditor.MemoArticle.Text := '';
+		FormDetailsEditor.IsDirty := False;
+  end;
 	if FormDetailsEditor.ShowModal = MrOk then
 	begin
 		ArticleBody := FormDetailsEditor.MemoArticle.Text;
