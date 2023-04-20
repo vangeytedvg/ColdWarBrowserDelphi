@@ -16,7 +16,8 @@ uses
 	FireDAC.DatS, FireDAC.DApt.Intf, FireDAC.DApt, Data.Bind.EngExt,
 	Fmx.Bind.DBEngExt, System.Rtti, System.Bindings.Outputs, Fmx.Bind.Editors,
 	Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client, Data.Bind.Components,
-	Data.Bind.DBScope, FMX.TabControl, FMX.DialogService, FMX.Objects;
+	Data.Bind.DBScope, FMX.TabControl, FMX.DialogService, FMX.Objects,
+	System.IniFiles, ShellAPI, ShlObj, System.IOUtils;
 
 const
 	WEBVIEW2_SHOWBROWSER = WM_APP + $101;
@@ -72,18 +73,10 @@ type
 		procedure BtnClearAddressClick(Sender: TObject);
 		procedure BtnEditSelectedLinkClick(Sender: TObject);
 		procedure BtnInfoClick(Sender: TObject);
-		procedure WVFMXBrowser1FrameNavigationStarting(Sender: TObject;
-			const AWebView: ICoreWebView2;
-			const AArgs: ICoreWebView2NavigationStartingEventArgs);
-		procedure WVFMXBrowser1FrameNavigationCompleted(Sender: TObject;
-			const AWebView: ICoreWebView2;
-			const AArgs: ICoreWebView2NavigationCompletedEventArgs);
-		procedure WVFMXBrowser1FrameDOMContentLoaded(Sender: TObject;
-			const AFrame: ICoreWebView2Frame;
-			const AArgs: ICoreWebView2DOMContentLoadedEventArgs; AFrameID: Integer);
 		procedure WVFMXBrowser1NavigationCompleted(Sender: TObject;
 			const AWebView: ICoreWebView2;
 			const AArgs: ICoreWebView2NavigationCompletedEventArgs);
+		procedure FormClose(Sender: TObject; var Action: TCloseAction);
 
 	private
 		FMXWindowParent: TWVFMXWindowParent;
@@ -113,6 +106,7 @@ type
 		function GetCurrentWindowState: TWindowState;
 		procedure UpdateCustomWindowState;
 		procedure CustomWndProc(var AMessage: TMessage);
+		function GetDocumentsDirectory: string;
 	public
 		procedure CreateHandle; override;
 		procedure DestroyHandle; override;
@@ -134,7 +128,39 @@ implementation
 uses
 	FMX.Platform, FMX.Platform.Win, FrmAddLink, FrmDetailsEditor;
 
+function TMainForm.GetDocumentsDirectory: string;
+var
+	Path: array [0 .. MAX_PATH] of Char;
+begin
+	// Call SHGetFolderPath to retrieve the documents directory path
+	if Succeeded(SHGetFolderPath(0, CSIDL_MYDOCUMENTS, 0, 0, @Path[0])) then
+		Result := Path
+	else
+		Result := '';
+end;
+
+procedure TMainForm.FormClose(Sender: TObject; var Action: TCloseAction);
+// Save the position and size of this form
+var
+	Inifile: Tinifile;
+begin
+	IniFile := TIniFile.Create(TPath.Combine(GetDocumentsDirectory,
+		'COLDWARsettings.ini'));
+	try
+		// Save the form's position and size to the INI file
+		IniFile.WriteInteger('MainForm', 'Left', Left);
+		IniFile.WriteInteger('MainForm', 'Top', Top);
+		IniFile.WriteInteger('MainForm', 'Width', Width);
+		IniFile.WriteInteger('MainForm', 'Height', Height);
+	finally
+		// Free the INI file instance
+		IniFile.Free;
+	end;
+end;
+
 procedure TMainForm.FormCreate(Sender: TObject);
+var
+	IniFile: TIniFile;
 begin
 	FMXWindowParent := nil;
 	FCustomWindowState := WindowState;
@@ -145,6 +171,19 @@ begin
 	FLinkCategory := '';
 	FLinkDescription := '';
 	FLinkURL := '';
+	// Create an INI file instance
+	IniFile := TIniFile.Create(TPath.Combine(GetDocumentsDirectory,
+		'COLDWARsettings.ini'));
+	try
+		// Read the form's position and size from the INI file and restore it
+		Left := IniFile.ReadInteger('MainForm', 'Left', Left);
+		Top := IniFile.ReadInteger('MainForm', 'Top', Top);
+		Width := IniFile.ReadInteger('MainForm', 'Width', Width);
+		Height := IniFile.ReadInteger('MainForm', 'Height', Height);
+	finally
+		// Free the INI file instance
+		IniFile.Free;
+	end;
 end;
 
 procedure TMainForm.FormResize(Sender: TObject);
@@ -155,6 +194,7 @@ end;
 procedure TMainForm.FormShow(Sender: TObject);
 var
 	TempHandle: HWND;
+	IniFile: TIniFile;
 begin
 	// TFMXWindowParent has to be created at runtime
 	CreateFMXWindowParent;
@@ -170,6 +210,9 @@ begin
 		if not(WVFMXBrowser1.CreateBrowser(TempHandle)) then
 			Timer1.Enabled := True;
 	end;
+
+	// Create an INI file instance
+
 end;
 
 function TMainForm.PostCustomMessage(AMsg: Cardinal; AWParam: WPARAM;
@@ -538,35 +581,6 @@ begin
 	AddressLay.Enabled := True;
 end;
 
-procedure TMainForm.WVFMXBrowser1FrameDOMContentLoaded(Sender: TObject;
-const AFrame: ICoreWebView2Frame;
-const AArgs: ICoreWebView2DOMContentLoadedEventArgs; AFrameID: Integer);
-var
-	S: PWideChar;
-begin
-	AFrame.Get_name(S);
-
-end;
-
-procedure TMainForm.WVFMXBrowser1FrameNavigationCompleted(Sender: TObject;
-const AWebView: ICoreWebView2;
-const AArgs: ICoreWebView2NavigationCompletedEventArgs);
-var
-	S: PWideChar;
-begin
-
-end;
-
-procedure TMainForm.WVFMXBrowser1FrameNavigationStarting(Sender: TObject;
-const AWebView: ICoreWebView2;
-const AArgs: ICoreWebView2NavigationStartingEventArgs);
-var
-	S: PWideChar;
-begin
-	AArgs.Get_uri(S);
-	AddressEdt.Text := S;
-end;
-
 procedure TMainForm.WVFMXBrowser1GotFocus(Sender: TObject);
 begin
 	// We use a hidden button to fix the focus issues when the browser has the real focus.
@@ -582,6 +596,7 @@ end;
 procedure TMainForm.WVFMXBrowser1NavigationCompleted(Sender: TObject;
 const AWebView: ICoreWebView2;
 const AArgs: ICoreWebView2NavigationCompletedEventArgs);
+// ******************************************************************************
 // NOTE: HAD THIS CHANGE THIS TO KEEP TRACK OF THE URL IF THE USER
 // CLICKS ON A LINK AND THE PAGE CHANGES
 var

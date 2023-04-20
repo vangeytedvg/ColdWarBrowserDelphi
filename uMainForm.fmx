@@ -10,6 +10,7 @@ object MainForm: TMainForm
   FormFactor.Height = 480
   FormFactor.Devices = [Desktop]
   OnCreate = FormCreate
+  OnClose = FormClose
   OnResize = FormResize
   OnShow = FormShow
   DesignerMasterStyle = 0
@@ -3103,10 +3104,7 @@ object MainForm: TMainForm
     OnInitializationError = WVFMXBrowser1InitializationError
     OnAfterCreated = WVFMXBrowser1AfterCreated
     OnNavigationCompleted = WVFMXBrowser1NavigationCompleted
-    OnFrameNavigationStarting = WVFMXBrowser1FrameNavigationStarting
-    OnFrameNavigationCompleted = WVFMXBrowser1FrameNavigationCompleted
     OnGotFocus = WVFMXBrowser1GotFocus
-    OnFrameDOMContentLoaded = WVFMXBrowser1FrameDOMContentLoaded
     OnStatusBarTextChanged = WVFMXBrowser1StatusBarTextChanged
     Left = 936
     Top = 464
