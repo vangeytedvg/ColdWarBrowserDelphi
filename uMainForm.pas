@@ -17,7 +17,7 @@ uses
 	Fmx.Bind.DBEngExt, System.Rtti, System.Bindings.Outputs, Fmx.Bind.Editors,
 	Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client, Data.Bind.Components,
 	Data.Bind.DBScope, FMX.TabControl, FMX.DialogService, FMX.Objects,
-	System.IniFiles, ShellAPI, ShlObj, System.IOUtils;
+	System.IniFiles, ShellAPI, ShlObj, System.IOUtils, FMX.Menus;
 
 const
 	WEBVIEW2_SHOWBROWSER = WM_APP + $101;
@@ -55,6 +55,12 @@ type
 		BtnInfo: TButton;
 		FDQueryGetArticle: TFDQuery;
 		FDQueryGeneric: TFDQuery;
+    MainMenu1: TMainMenu;
+    MenuItem1: TMenuItem;
+    MenuItem2: TMenuItem;
+    btnReload: TButton;
+    mnuItemReport: TMenuItem;
+    mnuItemGroupAll: TMenuItem;
 		procedure FormCreate(Sender: TObject);
 		procedure FormResize(Sender: TObject);
 		procedure FormShow(Sender: TObject);
@@ -77,6 +83,8 @@ type
 			const AWebView: ICoreWebView2;
 			const AArgs: ICoreWebView2NavigationCompletedEventArgs);
 		procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure MenuItem2Click(Sender: TObject);
+    procedure btnReloadClick(Sender: TObject);
 
 	private
 		FMXWindowParent: TWVFMXWindowParent;
@@ -416,6 +424,12 @@ begin
 	end;
 end;
 
+procedure TMainForm.btnReloadClick(Sender: TObject);
+// Reload the current page
+begin
+  WVFMXBrowser1.Refresh;
+end;
+
 procedure TMainForm.BtnClearAddressClick(Sender: TObject);
 begin
 	AddressEdt.Text := '';
@@ -512,6 +526,11 @@ begin
 	WVFMXBrowser1.Navigate(AddressEdt.Text);
 end;
 
+procedure TMainForm.MenuItem2Click(Sender: TObject);
+begin
+	Application.Terminate;
+end;
+
 procedure TMainForm.CreateHandle;
 begin
 	inherited CreateHandle;
@@ -581,7 +600,7 @@ end;
 procedure TMainForm.WVFMXBrowser1AfterCreated(Sender: TObject);
 begin
 	FMXWindowParent.UpdateSize;
-	Caption := 'Cold war Database Ready';
+	Caption := 'Database Ready';
 	AddressLay.Enabled := True;
 end;
 
