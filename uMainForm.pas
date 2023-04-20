@@ -17,7 +17,7 @@ uses
 	Fmx.Bind.DBEngExt, System.Rtti, System.Bindings.Outputs, Fmx.Bind.Editors,
 	Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client, Data.Bind.Components,
 	Data.Bind.DBScope, FMX.TabControl, FMX.DialogService, FMX.Objects,
-	System.IniFiles, ShellAPI, ShlObj, System.IOUtils, FMX.Menus;
+	System.IniFiles, ShellAPI, ShlObj, System.IOUtils, FMX.Menus, FMX.Effects;
 
 const
 	WEBVIEW2_SHOWBROWSER = WM_APP + $101;
@@ -33,34 +33,42 @@ type
 		StatusLbl: TLabel;
 		ListBoxDescription: TListBox;
 		SearchBox1: TSearchBox;
-		FDConnection1: TFDConnection;
 		StyleBook1: TStyleBook;
-		BindingsList1: TBindingsList;
-		LinkListControlToFieldDescription: TLinkListControlToField;
-		BindSourceDB1: TBindSourceDB;
-		FDQueryGetLink: TFDQuery;
-		FDQuery1: TFDQuery;
 		Header: TToolBar;
 		HeaderLabel: TLabel;
 		BtnSaveLink: TButton;
-		FDQueryInsertNewLink: TFDQuery;
 		Panel1: TPanel;
 		BrowserLay: TLayout;
 		FocusWorkaroundBtn: TButton;
 		BtnDeleteSelectedListItem: TButton;
 		BtnEditSelectedLink: TButton;
-		FDQueryDeleteItem: TFDQuery;
 		BtnClearAddress: TButton;
-		FDQueryUpdateLink: TFDQuery;
 		BtnInfo: TButton;
-		FDQueryGetArticle: TFDQuery;
+		MainMenu1: TMainMenu;
+		MenuItem1: TMenuItem;
+		MenuItem2: TMenuItem;
+		BtnReload: TButton;
+		MnuItemReport: TMenuItem;
+		MnuItemGroupAll: TMenuItem;
+		MnuClearCache: TMenuItem;
+		MenuItem3: TMenuItem;
+		MnuPrint: TMenuItem;
+		MnuPrintToPDF: TMenuItem;
+		MenuItem4: TMenuItem;
+		Splitter1: TSplitter;
 		FDQueryGeneric: TFDQuery;
-    MainMenu1: TMainMenu;
-    MenuItem1: TMenuItem;
-    MenuItem2: TMenuItem;
-    btnReload: TButton;
-    mnuItemReport: TMenuItem;
-    mnuItemGroupAll: TMenuItem;
+		FDConnection1: TFDConnection;
+		FDQueryDeleteItem: TFDQuery;
+		FDQueryGetArticle: TFDQuery;
+		FDQueryUpdateLink: TFDQuery;
+		FDQueryGetLink: TFDQuery;
+		FDQueryInsertNewLink: TFDQuery;
+		FDQueryFullReport: TFDQuery;
+    BindSourceDB1: TBindSourceDB;
+    FDQuery2: TFDQuery;
+    BindingsList1: TBindingsList;
+    LinkListControlToField1: TLinkListControlToField;
+    ShadowEffect1: TShadowEffect;
 		procedure FormCreate(Sender: TObject);
 		procedure FormResize(Sender: TObject);
 		procedure FormShow(Sender: TObject);
@@ -83,8 +91,10 @@ type
 			const AWebView: ICoreWebView2;
 			const AArgs: ICoreWebView2NavigationCompletedEventArgs);
 		procedure FormClose(Sender: TObject; var Action: TCloseAction);
-    procedure MenuItem2Click(Sender: TObject);
-    procedure btnReloadClick(Sender: TObject);
+		procedure MenuItem2Click(Sender: TObject);
+		procedure BtnReloadClick(Sender: TObject);
+		procedure MnuClearCacheClick(Sender: TObject);
+		procedure MnuPrintToPDFClick(Sender: TObject);
 
 	private
 		FMXWindowParent: TWVFMXWindowParent;
@@ -134,7 +144,7 @@ implementation
 // This demo uses a TWVFMXBrowser and a TWVFMXWindowParent. It replaces the original WndProc with a
 // custom CustomWndProc procedure to handle Windows messages.
 uses
-	FMX.Platform, FMX.Platform.Win, FrmAddLink, FrmDetailsEditor;
+	FMX.Platform, FMX.Platform.Win, FrmAddLink, FrmDetailsEditor, DataModule;
 
 function TMainForm.GetDocumentsDirectory: string;
 var
@@ -173,7 +183,7 @@ begin
 	FMXWindowParent := nil;
 	FCustomWindowState := WindowState;
 	FDConnection1.Connected := True;
-	FDQuery1.Active := True;
+	FDQuery2.Active := True;
 	FLinkID := 0;
 	FListITEM := nil;
 	FLinkCategory := '';
@@ -219,7 +229,7 @@ begin
 			Timer1.Enabled := True;
 	end;
 
-	// Create an INI file instance
+	FDQuery2.Open;
 
 end;
 
@@ -269,10 +279,10 @@ begin
 				{ Detect which button was pushed and show a different message }
 				MrYES:
 					begin
-						FDQuery1.Close;
+						FDQuery2.Close;
 						FDQueryDeleteItem.ParamByName('id').AsInteger := Id;
 						FDQueryDeleteItem.ExecSQL;
-						FDQuery1.Open
+						FDQuery2.Open
 					end;
 				MrNo:
 					Exit;
@@ -297,7 +307,7 @@ begin
 	if AddLinkForm.ShowModal = Mrok then
 	begin
 		try
-			FDQuery1.Close;
+			FDQuery2.Close;
 			FDQueryUpdateLink.Prepare;
 			FDQueryUpdateLink.Params.ParamByName('Adescription').AsString :=
 				AddlinkForm.EdtDescription.Text;
@@ -305,7 +315,7 @@ begin
 				AddLinkForm.ComboBox1.Selected.Text;
 			FDQueryUpdateLink.Params.ParamByName('Aid').AsInteger := IId;
 			FDQueryUpdateLink.ExecSQL;
-			FDQuery1.Open;
+			FDQuery2.Open;
 		except
 			on E: Exception do
 			begin
@@ -332,7 +342,7 @@ begin
 	FormDetailsEditor.LinkID := FLinkID;
 	FormDetailsEditor.LblArticle.Text := FLinkDescription + ' in -<[' +
 		FLinkCategory + ']>-';
-  FormDetailsEditor.MemoArticle.ClearContent;
+	FormDetailsEditor.MemoArticle.ClearContent;
 	if GetArticleContent(FLinkID) = 'FOUND' then
 	// UPDATE
 	begin
@@ -341,11 +351,11 @@ begin
 		FormDetailsEditor.IsDirty := False;
 	end
 	else if GetArticleContent(FLinkID) = 'NONE' then
-  begin
+	begin
 		FoundArt := False;
 		FormDetailsEditor.MemoArticle.Text := '';
 		FormDetailsEditor.IsDirty := False;
-  end;
+	end;
 	if FormDetailsEditor.ShowModal = MrOk then
 	begin
 		ArticleBody := FormDetailsEditor.MemoArticle.Text;
@@ -353,25 +363,25 @@ begin
 		if FoundArt then
 		begin
 			// Update record
-			FDQuery1.Close;
+			FDQuery2.Close;
 			SQLstr := 'UPDATE LinkDetails SET Article = :mArticleBody WHERE ID = :myId';
 			FDQueryGeneric.SQL.Text := SQLstr;
 			FDQueryGeneric.ParamByName('mArticleBody').AsString := ArticleBody;
 			FDQueryGeneric.ParamByName('myId').AsInteger := FArticleID;
 			FDQueryGeneric.ExecSQL;
 			ShowMessage('Record Updated');
-			FDQuery1.Open;
+			FDQuery2.Open;
 		end
 		else
 		begin
 			// Insert Record
-			FDQuery1.Close;
+			FDQuery2.Close;
 			SQLstr := 'INSERT INTO LinkDetails (LinkId, Article) VALUES (' +
 				IntToStr(FLinkID) + ',' + ArticleBody + ')';
 			FDQueryGeneric.SQL.Text := SQLstr;
 			FDQueryGeneric.ExecSQL;
 			ShowMessage('New Record inserted');
-			FDQuery1.Open;
+			FDQuery2.Open;
 		end;
 	end;
 end;
@@ -402,7 +412,7 @@ begin
 	if AddLinkForm.ShowModal = Mrok then
 	begin
 		try
-			FDQuery1.Close;
+			FDQuery2.Close;
 			// FDConnection1.Close;
 			// FDConnection1.Open;
 			FDQueryInsertNewLink.Params.ParamByName('mylink').AsString :=
@@ -413,7 +423,7 @@ begin
 				AddLinkForm.ComboBox1.Items[AddLinkForm.Combobox1.ItemIndex];
 			FDQueryInsertNewLink.Prepare;
 			FDQueryInsertNewLink.ExecSQL;
-			FDQuery1.Open;
+			FDQuery2.Open;
 			StatusLbl.Text := 'Record Saved';
 		except
 			on E: Exception do
@@ -424,10 +434,11 @@ begin
 	end;
 end;
 
-procedure TMainForm.btnReloadClick(Sender: TObject);
+procedure TMainForm.BtnReloadClick(Sender: TObject);
 // Reload the current page
 begin
-  WVFMXBrowser1.Refresh;
+	WVFMXBrowser1.Refresh;
+
 end;
 
 procedure TMainForm.BtnClearAddressClick(Sender: TObject);
@@ -529,6 +540,38 @@ end;
 procedure TMainForm.MenuItem2Click(Sender: TObject);
 begin
 	Application.Terminate;
+end;
+
+procedure TMainForm.MnuClearCacheClick(Sender: TObject);
+var
+	BResult: TModalResult;
+begin
+	TDialogService.MessageDialog('Clear Cache?',
+		System.UITypes.TMsgDlgType.MtInformation, [System.UITypes.TMsgDlgBtn.MbYes,
+		System.UITypes.TMsgDlgBtn.MbNo, System.UITypes.TMsgDlgBtn.MbCancel],
+		System.UITypes.TMsgDlgBtn.MbYes, 0,
+
+	// Use an anonymous method to make sure the acknowledgment appears as expected.
+		procedure(const AResult: TModalResult)
+		begin
+			case AResult of
+				{ Detect which button was pushed and show a different message }
+				MrYES:
+					begin
+						WVFMXBrowser1.ClearCache;
+					end;
+				MrNo:
+					Exit;
+				MrCancel:
+					Exit;
+			end;
+		end);
+end;
+
+procedure TMainForm.MnuPrintToPDFClick(Sender: TObject);
+begin
+	WVFMXBrowser1.CoreWebView2PrintSettings.ShouldPrintBackgrounds := True;
+	WVFMXBrowser1.ShowPrintUI(True);
 end;
 
 procedure TMainForm.CreateHandle;

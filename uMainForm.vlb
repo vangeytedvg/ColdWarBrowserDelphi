@@ -1,83 +1,162 @@
-﻿[FDQuery1]
-Visible=False
-Coordinates=451,188,63,33
-
-[Header]
-Coordinates=302,309,49,33
+﻿[Header]
+Coordinates=302,309,57,36
 
 [HeaderLabel]
-Coordinates=420,240,76,51
+Coordinates=420,240,88,58
 
 [Timer1]
-Coordinates=243,327,48,33
-
-[FDQueryGetLink]
-Coordinates=410,80,96,51
+Coordinates=243,327,55,36
 
 [WVFMXBrowser1]
-Coordinates=124,327,99,33
+Coordinates=124,327,116,36
 
 [AddressLay]
-Coordinates=35,327,73,33
-
-[BindSourceDB1]
-Coordinates=270,70,92,141
+Coordinates=35,327,82,36
 
 [StyleBook1]
-Coordinates=451,78,70,33
-
-[FDConnection1]
-Coordinates=451,133,90,33
+Coordinates=451,78,80,36
 
 [SearchBox1]
-Coordinates=470,120,73,51
+Coordinates=470,120,84,58
 
 [GoBtn]
-Coordinates=158,188,45,51
-
-[BindingsList1]
-Coordinates=451,243,82,33
+Coordinates=210,270,51,58
 
 [StatusLbl]
-Coordinates=89,231,61,51
+Coordinates=170,310,68,58
 
 [AddressEdt]
-Coordinates=400,180,72,51
+Coordinates=400,180,81,58
 
 [ListBoxDescription]
-Coordinates=0,0,116,177
+Coordinates=10,60,139,212
 ExplicitSubNodes=
 
 [StatusBar1]
-Coordinates=451,298,68,33
-
-[FDQueryInsertNewLink]
-Coordinates=428,1,128,51
+Coordinates=451,298,78,36
 
 [Panel1]
-Coordinates=451,353,47,33
+Coordinates=451,353,55,36
 
 [BrowserLay]
-Coordinates=432,401,73,33
+Coordinates=432,401,82,36
 
 [btnDeleteSelectedListItem]
-Coordinates=590,150,143,51
+Coordinates=570,170,165,58
 
 [FocusWorkaroundBtn]
-Coordinates=614,1,122,51
+Coordinates=614,1,138,58
 
 [btnSaveLink]
-Coordinates=20,231,75,51
-
-[FDQueryDeleteItem]
-Coordinates=592,78,109,51
+Coordinates=80,280,85,58
 
 [btnClearAddress]
-Coordinates=391,1,97,51
+Coordinates=391,1,110,58
 
 [btnEditSelectedLink]
-Coordinates=158,1,113,51
+Coordinates=158,1,129,58
+
+[]
+Coordinates=379,456,73,146
+Visible=False
+
+[mnuItemReport]
+Coordinates=546,78,103,36
+
+[btnReload]
+Coordinates=240,200,73,58
+
+[btnInfo]
+Coordinates=158,1,54,58
+
+[MainMenu1]
+Coordinates=325,257,81,36
+
+[MenuItem2]
+Coordinates=539,298,79,36
+
+[MenuItem1]
+Coordinates=539,353,79,36
+
+[mnuItemGroupAll]
+Coordinates=570,240,115,36
+
+[MenuItem3]
+Coordinates=520,401,79,36
+
+[MenuItem4]
+Coordinates=343,401,79,36
+
+[ADataModule.FDQueryFullReport]
+Coordinates=880,0,178,51
+
+[ADataModule.FDQueryInsertNewLink]
+Coordinates=880,140,196,51
+
+[ADataModule.FDQueryGeneric]
+Coordinates=880,70,164,51
+
+[ADataModule.FDQueryGetLink]
+Coordinates=880,309,164,51
+
+[mnuClearCache]
+Coordinates=234,401,107,36
+
+[mnuPrintToPDF]
+Coordinates=125,401,106,36
+
+[ADataModule.FDQueryGetArticle]
+Coordinates=671,427,175,51
+
+[Splitter1]
+Coordinates=325,1,62,36
+
+[ADataModule.FDQueryUpdateLink]
+Coordinates=880,386,182,51
+
+[mnuPrint]
+Coordinates=325,213,66,36
+
+[ADataModule.FDQueryDeleteItem]
+Coordinates=880,210,178,51
+
+[ADataModule.]
+Coordinates=687,282,155,58
+
+[ADataModule.FDQuery1]
+Coordinates=730,170,132,51
+
+[FDQueryGeneric]
+Coordinates=325,78,111,58
+
+[FDQueryGetLink]
+Coordinates=790,232,111,58
+
+[FDQueryDeleteItem]
+Coordinates=790,1,129,58
+
+[FDConnection1]
+Coordinates=16,406,104,36
+
+[FDQueryInsertNewLink]
+Coordinates=790,78,148,58
+
+[FDQueryGetArticle]
+Coordinates=790,309,123,58
+
+[FDQueryFullReport]
+Coordinates=790,155,126,58
 
 [FDQueryUpdateLink]
-Coordinates=614,227,113,51
+Coordinates=0,0,131,58
+
+[BindSourceDB1]
+Coordinates=230,80,106,168
+
+[FDQuery2]
+Coordinates=539,1,73,36
+Visible=False
+
+[BindingsList1]
+Coordinates=567,133,91,36
 

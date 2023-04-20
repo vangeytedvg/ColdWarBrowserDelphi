@@ -113,17 +113,26 @@ object MainForm: TMainForm
     Align = Left
     Position.X = 49.000000000000000000
     Position.Y = 89.000000000000000000
-    Size.Width = 187.730010986328100000
+    Size.Width = 216.000000000000000000
     Size.Height = 489.000000000000000000
     Size.PlatformDefault = False
     StyleLookup = 'listboxstyle'
     TabOrder = 8
     DisableFocusEffect = True
+    ItemIndex = 0
+    Items.Strings = (
+      'Algemeen'
+      'The complete history of the Cold War'
+      
+        'Article about the state of the political tension in the 20th cen' +
+        'tury'
+      'USSR'
+      'History Channel Cold War History')
     DefaultItemStyles.ItemStyle = ''
     DefaultItemStyles.GroupHeaderStyle = ''
     DefaultItemStyles.GroupFooterStyle = ''
     OnItemClick = ListBoxDescriptionItemClick
-    Viewport.Width = 183.700000000000000000
+    Viewport.Width = 212.000000000000000000
     Viewport.Height = 463.000000000000000000
     object SearchBox1: TSearchBox
       Touch.InteractiveGestures = [LongTap, DoubleTap]
@@ -131,7 +140,7 @@ object MainForm: TMainForm
       StyleLookup = 'searchboxstyle'
       TabOrder = 0
       ReturnKeyType = Done
-      Size.Width = 183.730010986328100000
+      Size.Width = 212.000000000000000000
       Size.Height = 22.000000000000000000
       Size.PlatformDefault = False
     end
@@ -3069,7 +3078,7 @@ object MainForm: TMainForm
           787453657474696E67732E466F6E74436F6C6F72070978464645304530453000
           0000}
       end>
-    Left = 456
+    Left = 848
     Top = 528
   end
   object Header: TToolBar
@@ -3079,6 +3088,7 @@ object MainForm: TMainForm
     TabOrder = 0
     object HeaderLabel: TLabel
       Align = Contents
+      AutoSize = True
       StyledSettings = [Style, FontColor]
       Margins.Left = 20.000000000000000000
       Size.Width = 980.000000000000000000
@@ -3088,6 +3098,13 @@ object MainForm: TMainForm
       TextSettings.Font.Family = 'KacstBook'
       TextSettings.Font.Size = 20.000000000000000000
       Text = 'Documentation Gallery'
+      object ShadowEffect1: TShadowEffect
+        Distance = 5.000000000000000000
+        Direction = 45.000000000000000000
+        Softness = 0.200000002980232200
+        Opacity = 0.600000023841857900
+        ShadowColor = claCadetblue
+      end
     end
   end
   object Panel1: TPanel
@@ -3146,7 +3163,7 @@ object MainForm: TMainForm
     Padding.Top = 5.000000000000000000
     Padding.Right = 5.000000000000000000
     Padding.Bottom = 5.000000000000000000
-    Size.Width = 763.270019531250000000
+    Size.Width = 734.000000000000000000
     Size.Height = 489.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 19
@@ -3161,6 +3178,59 @@ object MainForm: TMainForm
     Text = 'FocusWorkaroundBtn'
     Visible = False
   end
+  object MainMenu1: TMainMenu
+    Left = 848
+    Top = 464
+    object MenuItem1: TMenuItem
+      Text = '&File'
+      object mnuClearCache: TMenuItem
+        Locked = True
+        Text = 'Clear Cache'
+        OnClick = mnuClearCacheClick
+      end
+      object MenuItem3: TMenuItem
+        Locked = True
+        StyleLookup = 'menuseparatorstyle'
+        Text = '-'
+      end
+      object mnuPrint: TMenuItem
+        Locked = True
+        Text = 'Print'
+      end
+      object mnuPrintToPDF: TMenuItem
+        Locked = True
+        Text = 'Print To PDF'
+        OnClick = mnuPrintToPDFClick
+      end
+      object MenuItem4: TMenuItem
+        Locked = True
+        StyleLookup = 'menuseparatorstyle'
+        Text = '-'
+      end
+      object MenuItem2: TMenuItem
+        Locked = True
+        Text = 'E&xit'
+        OnClick = MenuItem2Click
+      end
+    end
+    object mnuItemReport: TMenuItem
+      Text = 'Reports'
+      object mnuItemGroupAll: TMenuItem
+        Locked = True
+        Text = 'Group All'
+      end
+    end
+  end
+  object Splitter1: TSplitter
+    Align = Right
+    Cursor = crHSplit
+    MinSize = 20.000000000000000000
+    Position.X = 999.000000000000000000
+    Position.Y = 89.000000000000000000
+    Size.Width = 1.000000000000000000
+    Size.Height = 489.000000000000000000
+    Size.PlatformDefault = False
+  end
   object WVFMXBrowser1: TWVFMXBrowser
     TargetCompatibleBrowserVersion = '95.0.1020.44'
     AllowSingleSignOnUsingOSPrimaryAccount = False
@@ -3172,48 +3242,28 @@ object MainForm: TMainForm
     Left = 936
     Top = 464
   end
+  object FDQueryGeneric: TFDQuery
+    Connection = FDConnection1
+    Left = 675
+    Top = 459
+  end
   object FDConnection1: TFDConnection
     Params.Strings = (
       
         'Database=C:\Development\Delphi\WebView4Delphi-main\WebView4Delph' +
         'i-main\demos\Delphi_FMX\SimpleFMXBrowser\coldwar.s3db'
       'DriverID=SQLite')
+    Connected = True
     LoginPrompt = False
-    Left = 280
-    Top = 528
+    Left = 480
+    Top = 516
   end
-  object BindingsList1: TBindingsList
-    Methods = <>
-    OutputConverters = <>
-    Left = 372
-    Top = 525
-    object LinkListControlToFieldDescription: TLinkListControlToField
-      Category = 'Quick Bindings'
-      DataSource = BindSourceDB1
-      FieldName = 'Description'
-      Control = ListBoxDescription
-      FillExpressions = <
-        item
-          SourceMemberName = 'id'
-          ControlMemberName = 'ImageIndex'
-        end>
-      FillHeaderExpressions = <>
-      FillHeaderFieldName = 'Category'
-      FillBreakGroups = <>
-    end
-  end
-  object BindSourceDB1: TBindSourceDB
-    DataSet = FDQuery1
-    ScopeMappings = <>
-    Left = 376
-    Top = 472
-  end
-  object FDQueryGetLink: TFDQuery
+  object FDQueryDeleteItem: TFDQuery
     Connection = FDConnection1
     SQL.Strings = (
-      'select link, description, category from links where id = (:id)')
-    Left = 280
-    Top = 472
+      'DELETE FROM Links WHERE Id = (:id)')
+    Left = 477
+    Top = 467
     ParamData = <
       item
         Name = 'ID'
@@ -3222,52 +3272,15 @@ object MainForm: TMainForm
         Value = Null
       end>
   end
-  object FDQuery1: TFDQuery
+  object FDQueryGetArticle: TFDQuery
     Connection = FDConnection1
     SQL.Strings = (
-      
-        'select id,  link, description, category from links ORDER BY cate' +
-        'gory')
-    Left = 456
-    Top = 472
-  end
-  object FDQueryInsertNewLink: TFDQuery
-    Connection = FDConnection1
-    SQL.Strings = (
-      
-        'INSERT INTO Links (link, description, category) VALUES (:myLink,' +
-        ' :myDescription, :myCategory)')
-    Left = 793
-    Top = 529
+      'SELECT * FROM LinkDetails WHERE LinkID = :myLinkID')
+    Left = 675
+    Top = 523
     ParamData = <
       item
-        Name = 'MYLINK'
-        DataType = ftString
-        ParamType = ptInput
-        Value = Null
-      end
-      item
-        Name = 'MYDESCRIPTION'
-        DataType = ftString
-        ParamType = ptInput
-        Value = Null
-      end
-      item
-        Name = 'MYCATEGORY'
-        DataType = ftString
-        ParamType = ptInput
-        Value = Null
-      end>
-  end
-  object FDQueryDeleteItem: TFDQuery
-    Connection = FDConnection1
-    SQL.Strings = (
-      'DELETE FROM Links WHERE Id = (:id)')
-    Left = 549
-    Top = 529
-    ParamData = <
-      item
-        Name = 'ID'
+        Name = 'MYLINKID'
         DataType = ftInteger
         ParamType = ptInput
         Value = Null
@@ -3279,8 +3292,8 @@ object MainForm: TMainForm
       
         'UPDATE Links SET description = :ADescription, category = :ACateg' +
         'ory WHERE id = :Aid;')
-    Left = 552
-    Top = 472
+    Left = 584
+    Top = 403
     ParamData = <
       item
         Name = 'ADESCRIPTION'
@@ -3301,42 +3314,92 @@ object MainForm: TMainForm
         Value = Null
       end>
   end
-  object FDQueryGetArticle: TFDQuery
+  object FDQueryGetLink: TFDQuery
     Connection = FDConnection1
     SQL.Strings = (
-      'SELECT * FROM LinkDetails WHERE LinkID = :myLinkID')
-    Left = 669
-    Top = 529
+      'select link, description, category from links where id = (:id)')
+    Left = 576
+    Top = 523
     ParamData = <
       item
-        Name = 'MYLINKID'
+        Name = 'ID'
         DataType = ftInteger
         ParamType = ptInput
         Value = Null
       end>
   end
-  object FDQueryGeneric: TFDQuery
+  object FDQueryInsertNewLink: TFDQuery
     Connection = FDConnection1
-    Left = 669
-    Top = 473
+    SQL.Strings = (
+      
+        'INSERT INTO Links (link, description, category) VALUES (:myLink,' +
+        ' :myDescription, :myCategory)')
+    Left = 763
+    Top = 499
+    ParamData = <
+      item
+        Name = 'MYLINK'
+        DataType = ftString
+        ParamType = ptInput
+        Value = Null
+      end
+      item
+        Name = 'MYDESCRIPTION'
+        DataType = ftString
+        ParamType = ptInput
+        Value = Null
+      end
+      item
+        Name = 'MYCATEGORY'
+        DataType = ftString
+        ParamType = ptInput
+        Value = Null
+      end>
   end
-  object MainMenu1: TMainMenu
-    Left = 760
-    Top = 472
-    object MenuItem1: TMenuItem
-      Text = '&File'
-      object MenuItem2: TMenuItem
-        Locked = True
-        Text = 'E&xit'
-        OnClick = MenuItem2Click
-      end
-    end
-    object mnuItemReport: TMenuItem
-      Text = 'Reports'
-      object mnuItemGroupAll: TMenuItem
-        Locked = True
-        Text = 'Group All'
-      end
+  object FDQueryFullReport: TFDQuery
+    Connection = FDConnection1
+    SQL.Strings = (
+      
+        'SELECT Links.Description, Links.Category, Links.Link, LinkDetail' +
+        's.Article'
+      
+        'FROM Links LEFT JOIN LinkDetails ON Links.Id = LinkDetails.LinkI' +
+        'd;')
+    Left = 573
+    Top = 467
+  end
+  object BindSourceDB1: TBindSourceDB
+    DataSet = FDQuery2
+    ScopeMappings = <>
+    Left = 304
+    Top = 488
+  end
+  object FDQuery2: TFDQuery
+    Active = True
+    Connection = FDConnection1
+    SQL.Strings = (
+      'SELECT Id, description, category, link FROM Links')
+    Left = 392
+    Top = 520
+  end
+  object BindingsList1: TBindingsList
+    Methods = <>
+    OutputConverters = <>
+    Left = 388
+    Top = 429
+    object LinkListControlToField1: TLinkListControlToField
+      Category = 'Quick Bindings'
+      DataSource = BindSourceDB1
+      FieldName = 'Description'
+      Control = ListBoxDescription
+      FillExpressions = <
+        item
+          SourceMemberName = 'id'
+          ControlMemberName = 'ImageIndex'
+        end>
+      FillHeaderExpressions = <>
+      FillHeaderFieldName = 'Category'
+      FillBreakGroups = <>
     end
   end
 end
