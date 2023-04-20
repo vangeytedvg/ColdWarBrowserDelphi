@@ -64,11 +64,14 @@ type
 		FDQueryGetLink: TFDQuery;
 		FDQueryInsertNewLink: TFDQuery;
 		FDQueryFullReport: TFDQuery;
-    BindSourceDB1: TBindSourceDB;
-    FDQuery2: TFDQuery;
-    BindingsList1: TBindingsList;
-    LinkListControlToField1: TLinkListControlToField;
-    ShadowEffect1: TShadowEffect;
+		BindSourceDB1: TBindSourceDB;
+		FDQuery2: TFDQuery;
+		BindingsList1: TBindingsList;
+		LinkListControlToField1: TLinkListControlToField;
+		ShadowEffect1: TShadowEffect;
+		BtnBack: TButton;
+    Button1: TButton;
+    Button2: TButton;
 		procedure FormCreate(Sender: TObject);
 		procedure FormResize(Sender: TObject);
 		procedure FormShow(Sender: TObject);
@@ -95,6 +98,9 @@ type
 		procedure BtnReloadClick(Sender: TObject);
 		procedure MnuClearCacheClick(Sender: TObject);
 		procedure MnuPrintToPDFClick(Sender: TObject);
+		procedure BtnBackClick(Sender: TObject);
+    procedure Button1Click(Sender: TObject);
+    procedure Button2Click(Sender: TObject);
 
 	private
 		FMXWindowParent: TWVFMXWindowParent;
@@ -434,11 +440,28 @@ begin
 	end;
 end;
 
+procedure TMainForm.Button1Click(Sender: TObject);
+begin
+	if WVFMXBrowser1.CanGoForward then
+    WVFMXBrowser1.GoForward;
+end;
+
+procedure TMainForm.Button2Click(Sender: TObject);
+begin
+  WVFMXBrowser1.Navigate('https://www.google.be');
+end;
+
 procedure TMainForm.BtnReloadClick(Sender: TObject);
 // Reload the current page
 begin
 	WVFMXBrowser1.Refresh;
 
+end;
+
+procedure TMainForm.BtnBackClick(Sender: TObject);
+begin
+	if WVFMXBrowser1.CanGoBack then
+		WVFMXBrowser1.GoBack
 end;
 
 procedure TMainForm.BtnClearAddressClick(Sender: TObject);

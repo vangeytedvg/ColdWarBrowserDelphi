@@ -37,7 +37,7 @@ object MainForm: TMainForm
       Align = Client
       TabOrder = 0
       Text = 'https://www.google.be'
-      Size.Width = 823.000000000000000000
+      Size.Width = 607.000000000000000000
       Size.Height = 31.000000000000000000
       Size.PlatformDefault = False
     end
@@ -89,6 +89,42 @@ object MainForm: TMainForm
       Text = 'btnReload'
       OnClick = btnReloadClick
     end
+    object btnBack: TButton
+      Align = Left
+      Position.X = 49.000000000000000000
+      Position.Y = 5.000000000000000000
+      Size.Width = 80.000000000000000000
+      Size.Height = 31.000000000000000000
+      Size.PlatformDefault = False
+      StyleLookup = 'backtoolbutton'
+      TabOrder = 5
+      Text = 'Back'
+      OnClick = btnBackClick
+    end
+    object Button1: TButton
+      Align = Left
+      Position.X = 129.000000000000000000
+      Position.Y = 5.000000000000000000
+      Size.Width = 80.000000000000000000
+      Size.Height = 31.000000000000000000
+      Size.PlatformDefault = False
+      StyleLookup = 'nexttoolbutton'
+      TabOrder = 6
+      Text = 'Button1'
+      OnClick = Button1Click
+    end
+    object Button2: TButton
+      Align = Left
+      Position.X = 209.000000000000000000
+      Position.Y = 5.000000000000000000
+      Size.Width = 56.000000000000000000
+      Size.Height = 31.000000000000000000
+      Size.PlatformDefault = False
+      StyleLookup = 'pagecurltoolbutton'
+      TabOrder = 7
+      Text = 'Button2'
+      OnClick = Button2Click
+    end
   end
   object StatusBar1: TStatusBar
     Padding.Left = 3.000000000000000000
@@ -119,15 +155,6 @@ object MainForm: TMainForm
     StyleLookup = 'listboxstyle'
     TabOrder = 8
     DisableFocusEffect = True
-    ItemIndex = 0
-    Items.Strings = (
-      'Algemeen'
-      'The complete history of the Cold War'
-      
-        'Article about the state of the political tension in the 20th cen' +
-        'tury'
-      'USSR'
-      'History Channel Cold War History')
     DefaultItemStyles.ItemStyle = ''
     DefaultItemStyles.GroupHeaderStyle = ''
     DefaultItemStyles.GroupFooterStyle = ''
@@ -3253,7 +3280,6 @@ object MainForm: TMainForm
         'Database=C:\Development\Delphi\WebView4Delphi-main\WebView4Delph' +
         'i-main\demos\Delphi_FMX\SimpleFMXBrowser\coldwar.s3db'
       'DriverID=SQLite')
-    Connected = True
     LoginPrompt = False
     Left = 480
     Top = 516
@@ -3276,7 +3302,7 @@ object MainForm: TMainForm
     Connection = FDConnection1
     SQL.Strings = (
       'SELECT * FROM LinkDetails WHERE LinkID = :myLinkID')
-    Left = 675
+    Left = 707
     Top = 523
     ParamData = <
       item
@@ -3292,7 +3318,7 @@ object MainForm: TMainForm
       
         'UPDATE Links SET description = :ADescription, category = :ACateg' +
         'ory WHERE id = :Aid;')
-    Left = 584
+    Left = 496
     Top = 403
     ParamData = <
       item
@@ -3334,8 +3360,8 @@ object MainForm: TMainForm
       
         'INSERT INTO Links (link, description, category) VALUES (:myLink,' +
         ' :myDescription, :myCategory)')
-    Left = 763
-    Top = 499
+    Left = 779
+    Top = 467
     ParamData = <
       item
         Name = 'MYLINK'
@@ -3365,8 +3391,8 @@ object MainForm: TMainForm
       
         'FROM Links LEFT JOIN LinkDetails ON Links.Id = LinkDetails.LinkI' +
         'd;')
-    Left = 573
-    Top = 467
+    Left = 597
+    Top = 403
   end
   object BindSourceDB1: TBindSourceDB
     DataSet = FDQuery2
@@ -3375,7 +3401,6 @@ object MainForm: TMainForm
     Top = 488
   end
   object FDQuery2: TFDQuery
-    Active = True
     Connection = FDConnection1
     SQL.Strings = (
       'SELECT Id, description, category, link FROM Links')
