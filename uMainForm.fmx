@@ -131,18 +131,28 @@ object MainForm: TMainForm
     Padding.Top = 3.000000000000000000
     Padding.Right = 30.000000000000000000
     Padding.Bottom = 3.000000000000000000
-    Position.Y = 578.000000000000000000
+    Position.Y = 560.000000000000000000
     ShowSizeGrip = True
     Size.Width = 1000.000000000000000000
-    Size.Height = 22.000000000000000000
+    Size.Height = 40.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 2
     object StatusLbl: TLabel
       Align = Client
-      Size.Width = 967.000000000000000000
-      Size.Height = 16.000000000000000000
+      Size.Width = 713.000000000000000000
+      Size.Height = 34.000000000000000000
       Size.PlatformDefault = False
       TabOrder = 0
+    end
+    object Edit1: TEdit
+      Touch.InteractiveGestures = [LongTap, DoubleTap]
+      Align = Left
+      TabOrder = 1
+      Position.X = 3.000000000000000000
+      Position.Y = 3.000000000000000000
+      Size.Width = 254.000000000000000000
+      Size.Height = 34.000000000000000000
+      Size.PlatformDefault = False
     end
   end
   object ListBoxDescription: TListBox
@@ -150,7 +160,7 @@ object MainForm: TMainForm
     Position.X = 49.000000000000000000
     Position.Y = 89.000000000000000000
     Size.Width = 216.000000000000000000
-    Size.Height = 489.000000000000000000
+    Size.Height = 471.000000000000000000
     Size.PlatformDefault = False
     StyleLookup = 'listboxstyle'
     TabOrder = 8
@@ -160,7 +170,7 @@ object MainForm: TMainForm
     DefaultItemStyles.GroupFooterStyle = ''
     OnItemClick = ListBoxDescriptionItemClick
     Viewport.Width = 212.000000000000000000
-    Viewport.Height = 463.000000000000000000
+    Viewport.Height = 445.000000000000000000
     object SearchBox1: TSearchBox
       Touch.InteractiveGestures = [LongTap, DoubleTap]
       Align = Top
@@ -3105,7 +3115,7 @@ object MainForm: TMainForm
           787453657474696E67732E466F6E74436F6C6F72070978464645304530453000
           0000}
       end>
-    Left = 848
+    Left = 856
     Top = 528
   end
   object Header: TToolBar
@@ -3138,7 +3148,7 @@ object MainForm: TMainForm
     Align = Left
     Position.Y = 89.000000000000000000
     Size.Width = 49.000000000000000000
-    Size.Height = 489.000000000000000000
+    Size.Height = 471.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 18
     object btnDeleteSelectedListItem: TButton
@@ -3174,7 +3184,7 @@ object MainForm: TMainForm
     end
     object btnInfo: TButton
       Align = Bottom
-      Position.Y = 440.000000000000000000
+      Position.Y = 422.000000000000000000
       Size.Width = 49.000000000000000000
       Size.Height = 49.000000000000000000
       Size.PlatformDefault = False
@@ -3191,7 +3201,7 @@ object MainForm: TMainForm
     Padding.Right = 5.000000000000000000
     Padding.Bottom = 5.000000000000000000
     Size.Width = 734.000000000000000000
-    Size.Height = 489.000000000000000000
+    Size.Height = 471.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 19
   end
@@ -3206,7 +3216,7 @@ object MainForm: TMainForm
     Visible = False
   end
   object MainMenu1: TMainMenu
-    Left = 848
+    Left = 856
     Top = 464
     object MenuItem1: TMenuItem
       Text = '&File'
@@ -3245,6 +3255,7 @@ object MainForm: TMainForm
       object mnuItemGroupAll: TMenuItem
         Locked = True
         Text = 'Group All'
+        OnClick = mnuItemGroupAllClick
       end
     end
   end
@@ -3255,7 +3266,7 @@ object MainForm: TMainForm
     Position.X = 999.000000000000000000
     Position.Y = 89.000000000000000000
     Size.Width = 1.000000000000000000
-    Size.Height = 489.000000000000000000
+    Size.Height = 471.000000000000000000
     Size.PlatformDefault = False
   end
   object WVFMXBrowser1: TWVFMXBrowser
@@ -3271,8 +3282,8 @@ object MainForm: TMainForm
   end
   object FDQueryGeneric: TFDQuery
     Connection = FDConnection1
-    Left = 675
-    Top = 459
+    Left = 299
+    Top = 371
   end
   object FDConnection1: TFDConnection
     Params.Strings = (
@@ -3281,15 +3292,15 @@ object MainForm: TMainForm
         'i-main\demos\Delphi_FMX\SimpleFMXBrowser\coldwar.s3db'
       'DriverID=SQLite')
     LoginPrompt = False
-    Left = 480
-    Top = 516
+    Left = 320
+    Top = 292
   end
   object FDQueryDeleteItem: TFDQuery
     Connection = FDConnection1
     SQL.Strings = (
       'DELETE FROM Links WHERE Id = (:id)')
-    Left = 477
-    Top = 467
+    Left = 405
+    Top = 427
     ParamData = <
       item
         Name = 'ID'
@@ -3302,8 +3313,8 @@ object MainForm: TMainForm
     Connection = FDConnection1
     SQL.Strings = (
       'SELECT * FROM LinkDetails WHERE LinkID = :myLinkID')
-    Left = 707
-    Top = 523
+    Left = 523
+    Top = 379
     ParamData = <
       item
         Name = 'MYLINKID'
@@ -3318,8 +3329,8 @@ object MainForm: TMainForm
       
         'UPDATE Links SET description = :ADescription, category = :ACateg' +
         'ory WHERE id = :Aid;')
-    Left = 496
-    Top = 403
+    Left = 296
+    Top = 435
     ParamData = <
       item
         Name = 'ADESCRIPTION'
@@ -3344,8 +3355,8 @@ object MainForm: TMainForm
     Connection = FDConnection1
     SQL.Strings = (
       'select link, description, category from links where id = (:id)')
-    Left = 576
-    Top = 523
+    Left = 520
+    Top = 331
     ParamData = <
       item
         Name = 'ID'
@@ -3360,8 +3371,8 @@ object MainForm: TMainForm
       
         'INSERT INTO Links (link, description, category) VALUES (:myLink,' +
         ' :myDescription, :myCategory)')
-    Left = 779
-    Top = 467
+    Left = 523
+    Top = 435
     ParamData = <
       item
         Name = 'MYLINK'
@@ -3391,27 +3402,29 @@ object MainForm: TMainForm
       
         'FROM Links LEFT JOIN LinkDetails ON Links.Id = LinkDetails.LinkI' +
         'd;')
-    Left = 597
-    Top = 403
+    Left = 389
+    Top = 371
   end
   object BindSourceDB1: TBindSourceDB
     DataSet = FDQuery2
     ScopeMappings = <>
     Left = 304
-    Top = 488
+    Top = 504
   end
   object FDQuery2: TFDQuery
     Connection = FDConnection1
     SQL.Strings = (
-      'SELECT Id, description, category, link FROM Links')
-    Left = 392
-    Top = 520
+      
+        'SELECT Id, description, category, link FROM Links ORDER BY categ' +
+        'ory')
+    Left = 408
+    Top = 504
   end
   object BindingsList1: TBindingsList
     Methods = <>
     OutputConverters = <>
-    Left = 388
-    Top = 429
+    Left = 780
+    Top = 525
     object LinkListControlToField1: TLinkListControlToField
       Category = 'Quick Bindings'
       DataSource = BindSourceDB1

@@ -70,8 +70,9 @@ type
 		LinkListControlToField1: TLinkListControlToField;
 		ShadowEffect1: TShadowEffect;
 		BtnBack: TButton;
-    Button1: TButton;
-    Button2: TButton;
+		Button1: TButton;
+		Button2: TButton;
+		Edit1: TEdit;
 		procedure FormCreate(Sender: TObject);
 		procedure FormResize(Sender: TObject);
 		procedure FormShow(Sender: TObject);
@@ -99,8 +100,9 @@ type
 		procedure MnuClearCacheClick(Sender: TObject);
 		procedure MnuPrintToPDFClick(Sender: TObject);
 		procedure BtnBackClick(Sender: TObject);
-    procedure Button1Click(Sender: TObject);
-    procedure Button2Click(Sender: TObject);
+		procedure Button1Click(Sender: TObject);
+		procedure Button2Click(Sender: TObject);
+		procedure MnuItemGroupAllClick(Sender: TObject);
 
 	private
 		FMXWindowParent: TWVFMXWindowParent;
@@ -170,6 +172,7 @@ var
 begin
 	IniFile := TIniFile.Create(TPath.Combine(GetDocumentsDirectory,
 		'COLDWARsettings.ini'));
+	FDConnection1.Close;
 	try
 		// Save the form's position and size to the INI file
 		IniFile.WriteInteger('MainForm', 'Left', Left);
@@ -338,8 +341,11 @@ var
 	FoundArt: Boolean;
 	ArticleBody: string;
 	SQLstr: string;
+	QRY: TFDQuery;
 begin
 	// Article Selected?
+	// FormDetailsEditor.MemoArticle.Text := '';
+	// FormDetailsEditor.IsDirty := False;
 	if FLinkId = 0 then
 	begin
 		ShowMessage('Please choose an article first!');
@@ -348,7 +354,6 @@ begin
 	FormDetailsEditor.LinkID := FLinkID;
 	FormDetailsEditor.LblArticle.Text := FLinkDescription + ' in -<[' +
 		FLinkCategory + ']>-';
-	FormDetailsEditor.MemoArticle.ClearContent;
 	if GetArticleContent(FLinkID) = 'FOUND' then
 	// UPDATE
 	begin
@@ -370,21 +375,27 @@ begin
 		begin
 			// Update record
 			FDQuery2.Close;
-			SQLstr := 'UPDATE LinkDetails SET Article = :mArticleBody WHERE ID = :myId';
-			FDQueryGeneric.SQL.Text := SQLstr;
-			FDQueryGeneric.ParamByName('mArticleBody').AsString := ArticleBody;
-			FDQueryGeneric.ParamByName('myId').AsInteger := FArticleID;
-			FDQueryGeneric.ExecSQL;
-			ShowMessage('Record Updated');
-			FDQuery2.Open;
+			QRY := TFDQuery.Create(nil);
+			try
+				SQLstr := 'UPDATE LinkDetails SET ArticleText = ' + QuotedStr(ArticleBody) +
+					' WHERE LinkID =' + IntToStr(FLinkId);
+				Edit1.Text := Sqlstr;
+				QRY.SQL.Add(SQLstr);
+				QRY.Connection := FDConnection1;
+				QRY.ExecSQL;
+				FDQuery2.Open;
+			finally
+				QRY.Free;
+			end;
 		end
 		else
 		begin
 			// Insert Record
 			FDQuery2.Close;
-			SQLstr := 'INSERT INTO LinkDetails (LinkId, Article) VALUES (' +
-				IntToStr(FLinkID) + ',' + ArticleBody + ')';
+			SQLstr := 'INSERT INTO LinkDetails (LinkId, ArticleText) VALUES (:myLinkId, :myArticleBody)';
 			FDQueryGeneric.SQL.Text := SQLstr;
+			FDQueryGeneric.ParamByName('myLinkId').AsInteger := FLinkId;
+			FDQueryGeneric.ParamByName('myArticleBody').AsString := ArticleBody;
 			FDQueryGeneric.ExecSQL;
 			ShowMessage('New Record inserted');
 			FDQuery2.Open;
@@ -396,17 +407,20 @@ function TMainForm.GetArticleContent(LinkId: Integer): string;
 var
 	ArticleText: string;
 begin
-	FDQueryGetArticle.ParamByName('myLinkID').AsInteger := LinkId;
 	FDQueryGetArticle.Close;
+	FDQueryGetArticle.ParamByName('myLinkID').AsInteger := LinkId;
+
 	FDQueryGetArticle.Open;
 	if FDQueryGetArticle.RecordCount > 0 then
 	begin
 		FArticleID := FDQueryGetArticle.FieldByName('ID').Value;
-		FArticleText := FDQueryGetArticle.FieldByName('Article').Value;
+		FArticleText := FDQueryGetArticle.FieldByName('ArticleText').Value;
 		Result := 'FOUND';
 	end
 	else
+	begin
 		Result := 'NONE';
+	end;
 end;
 
 procedure TMainForm.BtnSaveLinkClick(Sender: TObject);
@@ -443,12 +457,12 @@ end;
 procedure TMainForm.Button1Click(Sender: TObject);
 begin
 	if WVFMXBrowser1.CanGoForward then
-    WVFMXBrowser1.GoForward;
+		WVFMXBrowser1.GoForward;
 end;
 
 procedure TMainForm.Button2Click(Sender: TObject);
 begin
-  WVFMXBrowser1.Navigate('https://www.google.be');
+	WVFMXBrowser1.Navigate('https://www.google.be');
 end;
 
 procedure TMainForm.BtnReloadClick(Sender: TObject);
@@ -589,6 +603,14 @@ begin
 					Exit;
 			end;
 		end);
+end;
+
+procedure TMainForm.MnuItemGroupAllClick(Sender: TObject);
+// Make a report of all comments found
+var
+	S: string;
+begin
+	S := '';
 end;
 
 procedure TMainForm.MnuPrintToPDFClick(Sender: TObject);
