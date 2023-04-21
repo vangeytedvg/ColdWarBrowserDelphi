@@ -17,7 +17,8 @@ uses
 	Fmx.Bind.DBEngExt, System.Rtti, System.Bindings.Outputs, Fmx.Bind.Editors,
 	Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client, Data.Bind.Components,
 	Data.Bind.DBScope, FMX.TabControl, FMX.DialogService, FMX.Objects,
-	System.IniFiles, ShellAPI, ShlObj, System.IOUtils, FMX.Menus, FMX.Effects;
+	System.IniFiles, ShellAPI, ShlObj, System.IOUtils, FMX.Menus, FMX.Effects,
+	FireDAC.Phys.MSAcc, FireDAC.Phys.MSAccDef;
 
 const
 	WEBVIEW2_SHOWBROWSER = WM_APP + $101;
@@ -70,9 +71,11 @@ type
 		LinkListControlToField1: TLinkListControlToField;
 		ShadowEffect1: TShadowEffect;
 		BtnBack: TButton;
-		Button1: TButton;
-		Button2: TButton;
+		BtnForward: TButton;
+		BtnHome: TButton;
 		Edit1: TEdit;
+		CallOutDescriptionPanel: TCalloutPanel;
+		CallLabel: TLabel;
 		procedure FormCreate(Sender: TObject);
 		procedure FormResize(Sender: TObject);
 		procedure FormShow(Sender: TObject);
@@ -100,9 +103,12 @@ type
 		procedure MnuClearCacheClick(Sender: TObject);
 		procedure MnuPrintToPDFClick(Sender: TObject);
 		procedure BtnBackClick(Sender: TObject);
-		procedure Button1Click(Sender: TObject);
-		procedure Button2Click(Sender: TObject);
 		procedure MnuItemGroupAllClick(Sender: TObject);
+		procedure BtnForwardClick(Sender: TObject);
+		procedure BtnHomeClick(Sender: TObject);
+		procedure ListBoxDescriptionMouseMove(Sender: TObject; Shift: TShiftState;
+			X, Y: Single);
+		procedure ListBoxDescriptionMouseLeave(Sender: TObject);
 
 	private
 		FMXWindowParent: TWVFMXWindowParent;
@@ -152,7 +158,7 @@ implementation
 // This demo uses a TWVFMXBrowser and a TWVFMXWindowParent. It replaces the original WndProc with a
 // custom CustomWndProc procedure to handle Windows messages.
 uses
-	FMX.Platform, FMX.Platform.Win, FrmAddLink, FrmDetailsEditor, frmAllLinks;
+	FMX.Platform, FMX.Platform.Win, FrmAddLink, FrmDetailsEditor, FrmAllLinks;
 
 function TMainForm.GetDocumentsDirectory: string;
 var
@@ -334,6 +340,17 @@ begin
 	end;
 end;
 
+procedure TMainForm.BtnForwardClick(Sender: TObject);
+begin
+	if WVFMXBrowser1.CanGoForward then
+		WVFMXBrowser1.GoForward;
+end;
+
+procedure TMainForm.BtnHomeClick(Sender: TObject);
+begin
+	WVFMXBrowser1.Navigate('https://www.google.be');
+end;
+
 procedure TMainForm.BtnInfoClick(Sender: TObject);
 // Edit the information about a link
 // Insert or UPDATE it.
@@ -377,8 +394,8 @@ begin
 			FDQuery2.Close;
 			QRY := TFDQuery.Create(nil);
 			try
-				SQLstr := 'UPDATE LinkDetails SET ArticleText = ' + QuotedStr(ArticleBody) +
-					' WHERE LinkID =' + IntToStr(FLinkId);
+				SQLstr := 'UPDATE LinkDetails SET ArticleText = ' +
+					QuotedStr(ArticleBody) + ' WHERE LinkID =' + IntToStr(FLinkId);
 				Edit1.Text := Sqlstr;
 				QRY.SQL.Add(SQLstr);
 				QRY.Connection := FDConnection1;
@@ -452,17 +469,6 @@ begin
 			end;
 		end;
 	end;
-end;
-
-procedure TMainForm.Button1Click(Sender: TObject);
-begin
-	if WVFMXBrowser1.CanGoForward then
-		WVFMXBrowser1.GoForward;
-end;
-
-procedure TMainForm.Button2Click(Sender: TObject);
-begin
-	WVFMXBrowser1.Navigate('https://www.google.be');
 end;
 
 procedure TMainForm.BtnReloadClick(Sender: TObject);
@@ -546,6 +552,27 @@ begin
 	// LoadURL;
 end;
 
+procedure TMainForm.ListBoxDescriptionMouseLeave(Sender: TObject);
+begin
+	CallLabel.Text := '';
+	CallOutDescriptionPanel.Visible := False;
+end;
+
+procedure TMainForm.ListBoxDescriptionMouseMove(Sender: TObject;
+Shift: TShiftState; X, Y: Single);
+var
+	Lb: TListBox;
+	Item: TListBoxItem;
+	PanelPos: TPosition;
+begin
+	Item := ListBoxDescription.ItemByPoint(X, Y);
+	if Assigned(Item) then
+	begin
+		CallOutDescriptionPanel.Visible := True;
+		CallLabel.Text := Item.Text;
+	end;
+end;
+
 procedure TMainForm.LoadArticle(ArticleId: Integer);
 // Get the current article details and set variables
 begin
@@ -609,34 +636,35 @@ procedure TMainForm.MnuItemGroupAllClick(Sender: TObject);
 // Make a report of all comments found
 var
 	S: string;
-  Qry: TFDQuery;
-  OldCategory : string;
+	Qry: TFDQuery;
+	OldCategory: string;
 begin
-  Qry := TFDQuery.Create(nil);
-	S := 'SELECT Links.Description, Links.Category, Links.Link, LinkDetails.ArticleText ' +
-	'FROM Links LEFT JOIN LinkDetails ON Links.Id = LinkDetails.LinkId ORDER BY Links.Category';
-  try
-  	Qry.Connection := FDConnection1;
-    Qry.Open(s);
+	Qry := TFDQuery.Create(nil);
+	S := 'SELECT Links.Description, Links.Category, Links.Link, LinkDetails.ArticleText '
+		+ 'FROM Links LEFT JOIN LinkDetails ON Links.Id = LinkDetails.LinkId ORDER BY Links.Category';
+	try
+		Qry.Connection := FDConnection1;
+		Qry.Open(S);
 
-    while not Qry.Eof do
-    begin
-      if OldCategory <> Qry.FieldByName('Category').AsString then
-      begin
-        FrmAll.MemoAll.Lines.Add(Qry.FieldByName('Category').AsString + sLineBreak);
-        // Draw a line
-        FrmAll.MemoAll.Lines.Add(StringOfChar('-', 80));
-        OldCategory :=Qry.FieldByName('Category').AsString;
-      end;
-      FrmAll.MemoAll.Lines.Add(Qry.FieldByName('Description').AsString + sLineBreak);
-      Qry.Next;
-    end;
-  finally
-    Qry.Free;
-  end;
+		while not Qry.Eof do
+		begin
+			if OldCategory <> Qry.FieldByName('Category').AsString then
+			begin
+				FrmAll.MemoAll.Lines.Add(Qry.FieldByName('Category').AsString +
+					SLineBreak);
+				// Draw a line
+				FrmAll.MemoAll.Lines.Add(StringOfChar('-', 80));
+				OldCategory := Qry.FieldByName('Category').AsString;
+			end;
+			FrmAll.MemoAll.Lines.Add(Qry.FieldByName('Description').AsString +
+				SLineBreak);
+			Qry.Next;
+		end;
+	finally
+		Qry.Free;
+	end;
 
-
-  FrmAll.Show;
+	FrmAll.Show;
 end;
 
 procedure TMainForm.MnuPrintToPDFClick(Sender: TObject);
