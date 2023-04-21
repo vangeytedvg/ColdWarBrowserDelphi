@@ -19,7 +19,7 @@ object MainForm: TMainForm
     Interval = 300
     OnTimer = Timer1Timer
     Left = 936
-    Top = 528
+    Top = 512
   end
   object AddressLay: TLayout
     Align = Top
@@ -3116,7 +3116,7 @@ object MainForm: TMainForm
           0000}
       end>
     Left = 856
-    Top = 528
+    Top = 512
   end
   object Header: TToolBar
     Size.Width = 1000.000000000000000000
@@ -3217,7 +3217,7 @@ object MainForm: TMainForm
   end
   object MainMenu1: TMainMenu
     Left = 856
-    Top = 464
+    Top = 456
     object MenuItem1: TMenuItem
       Text = '&File'
       object mnuClearCache: TMenuItem
@@ -3278,7 +3278,7 @@ object MainForm: TMainForm
     OnGotFocus = WVFMXBrowser1GotFocus
     OnStatusBarTextChanged = WVFMXBrowser1StatusBarTextChanged
     Left = 936
-    Top = 464
+    Top = 456
   end
   object FDQueryGeneric: TFDQuery
     Connection = FDConnection1
@@ -3291,6 +3291,7 @@ object MainForm: TMainForm
         'Database=C:\Development\Delphi\WebView4Delphi-main\WebView4Delph' +
         'i-main\demos\Delphi_FMX\SimpleFMXBrowser\coldwar.s3db'
       'DriverID=SQLite')
+    Connected = True
     LoginPrompt = False
     Left = 320
     Top = 292
@@ -3299,8 +3300,8 @@ object MainForm: TMainForm
     Connection = FDConnection1
     SQL.Strings = (
       'DELETE FROM Links WHERE Id = (:id)')
-    Left = 405
-    Top = 427
+    Left = 413
+    Top = 435
     ParamData = <
       item
         Name = 'ID'
@@ -3313,8 +3314,8 @@ object MainForm: TMainForm
     Connection = FDConnection1
     SQL.Strings = (
       'SELECT * FROM LinkDetails WHERE LinkID = :myLinkID')
-    Left = 523
-    Top = 379
+    Left = 515
+    Top = 435
     ParamData = <
       item
         Name = 'MYLINKID'
@@ -3356,7 +3357,7 @@ object MainForm: TMainForm
     SQL.Strings = (
       'select link, description, category from links where id = (:id)')
     Left = 520
-    Top = 331
+    Top = 371
     ParamData = <
       item
         Name = 'ID'
@@ -3371,8 +3372,8 @@ object MainForm: TMainForm
       
         'INSERT INTO Links (link, description, category) VALUES (:myLink,' +
         ' :myDescription, :myCategory)')
-    Left = 523
-    Top = 435
+    Left = 515
+    Top = 507
     ParamData = <
       item
         Name = 'MYLINK'
@@ -3398,11 +3399,11 @@ object MainForm: TMainForm
     SQL.Strings = (
       
         'SELECT Links.Description, Links.Category, Links.Link, LinkDetail' +
-        's.Article'
+        's.ArticleText'
       
         'FROM Links LEFT JOIN LinkDetails ON Links.Id = LinkDetails.LinkI' +
         'd;')
-    Left = 389
+    Left = 413
     Top = 371
   end
   object BindSourceDB1: TBindSourceDB
@@ -3423,8 +3424,8 @@ object MainForm: TMainForm
   object BindingsList1: TBindingsList
     Methods = <>
     OutputConverters = <>
-    Left = 780
-    Top = 525
+    Left = 772
+    Top = 509
     object LinkListControlToField1: TLinkListControlToField
       Category = 'Quick Bindings'
       DataSource = BindSourceDB1

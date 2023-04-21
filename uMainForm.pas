@@ -152,7 +152,7 @@ implementation
 // This demo uses a TWVFMXBrowser and a TWVFMXWindowParent. It replaces the original WndProc with a
 // custom CustomWndProc procedure to handle Windows messages.
 uses
-	FMX.Platform, FMX.Platform.Win, FrmAddLink, FrmDetailsEditor, DataModule;
+	FMX.Platform, FMX.Platform.Win, FrmAddLink, FrmDetailsEditor, frmAllLinks;
 
 function TMainForm.GetDocumentsDirectory: string;
 var
@@ -609,8 +609,34 @@ procedure TMainForm.MnuItemGroupAllClick(Sender: TObject);
 // Make a report of all comments found
 var
 	S: string;
+  Qry: TFDQuery;
+  OldCategory : string;
 begin
-	S := '';
+  Qry := TFDQuery.Create(nil);
+	S := 'SELECT Links.Description, Links.Category, Links.Link, LinkDetails.ArticleText ' +
+	'FROM Links LEFT JOIN LinkDetails ON Links.Id = LinkDetails.LinkId ORDER BY Links.Category';
+  try
+  	Qry.Connection := FDConnection1;
+    Qry.Open(s);
+
+    while not Qry.Eof do
+    begin
+      if OldCategory <> Qry.FieldByName('Category').AsString then
+      begin
+        FrmAll.MemoAll.Lines.Add(Qry.FieldByName('Category').AsString + sLineBreak);
+        // Draw a line
+        FrmAll.MemoAll.Lines.Add(StringOfChar('-', 80));
+        OldCategory :=Qry.FieldByName('Category').AsString;
+      end;
+      FrmAll.MemoAll.Lines.Add(Qry.FieldByName('Description').AsString + sLineBreak);
+      Qry.Next;
+    end;
+  finally
+    Qry.Free;
+  end;
+
+
+  FrmAll.Show;
 end;
 
 procedure TMainForm.MnuPrintToPDFClick(Sender: TObject);
